@@ -1,0 +1,186 @@
+/* ===== HOME PAGE ===== */
+.page-home .greeting {
+    font-size: var(--font-size-xxl);
+    font-weight: var(--font-weight-bold);
+    margin-bottom: var(--space-xl);
+}
+
+/* ===== SEARCH PAGE ===== */
+.page-search .search-input-wrap {
+    margin-bottom: var(--space-xxl);
+}
+
+.recent-searches-section {
+    margin-bottom: var(--space-xxl);
+}
+
+.recent-searches-row {
+    display: flex;
+    gap: var(--space-lg);
+    overflow-x: auto;
+    padding-bottom: var(--space-xs);
+}
+
+.genres-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    gap: var(--space-md);
+}
+
+/* ===== LIBRARY PAGE ===== */
+.page-library .library-title {
+    font-size: var(--font-size-xl);
+    font-weight: var(--font-weight-bold);
+    margin-bottom: var(--space-md);
+}
+
+/* ===== LIKED SONGS PAGE ===== */
+.page-liked .liked-header {
+    display: flex;
+    align-items: flex-end;
+    gap: var(--space-xl);
+    margin-bottom: var(--space-xxl);
+    padding: var(--space-xxl);
+    background: linear-gradient(135deg, #1db954 0%, #191414 100%);
+    border-radius: var(--radius-lg);
+}
+
+.liked-header-icon {
+    width: 200px;
+    height: 200px;
+    background: linear-gradient(135deg, #4b17e6, #1db954);
+    border-radius: var(--radius-md);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    box-shadow: var(--shadow-elevated);
+}
+
+.liked-header-icon svg {
+    width: 72px;
+    height: 72px;
+    fill: var(--text-primary);
+}
+
+.liked-header-info h1 {
+    font-size: 48px;
+    font-weight: var(--font-weight-bold);
+    margin-bottom: var(--space-xs);
+}
+
+.liked-header-info p {
+    color: var(--text-secondary);
+    font-size: var(--font-size-sm);
+}
+
+/* ===== PLAYLIST PAGE ===== */
+.page-playlist .playlist-gradient {
+    margin: calc(-1 * var(--space-xl));
+    margin-bottom: 0;
+    padding: var(--space-3xl) var(--space-xl);
+    background: linear-gradient(180deg, rgba(80, 56, 160, 0.6) 0%, var(--bg-primary) 100%);
+}
+
+/* ===== ARTIST PAGE ===== */
+.page-artist .artist-actions {
+    display: flex;
+    align-items: center;
+    gap: var(--space-md);
+    margin-bottom: var(--space-xxl);
+}
+
+.btn-follow {
+    padding: var(--space-xs) var(--space-xl);
+    border: 1px solid var(--text-secondary);
+    border-radius: var(--radius-pill);
+    font-size: var(--font-size-xs);
+    font-weight: var(--font-weight-semibold);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: var(--text-primary);
+    transition: border-color var(--transition-fast), transform var(--transition-fast);
+}
+
+.btn-follow:hover {
+    border-color: var(--text-primary);
+    transform: scale(1.02);
+}
+
+.artist-popular-tracks {
+    margin-bottom: var(--space-xxl);
+}
+
+.artist-popular-tracks h3 {
+    font-size: var(--font-size-lg);
+    font-weight: var(--font-weight-bold);
+    margin-bottom: var(--space-md);
+}
+
+.artist-albums-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    gap: var(--space-md);
+}
+
+.artist-about {
+    max-width: 700px;
+}
+
+.artist-about-img {
+    width: 100%;
+    height: 300px;
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    margin-bottom: var(--space-lg);
+    object-fit: cover;
+}
+
+.artist-about-text {
+    font-size: var(--font-size-sm);
+    color: var(--text-secondary);
+    line-height: 1.6;
+    margin-bottom: var(--space-lg);
+}
+
+.artist-about-stats {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-xs);
+    font-size: var(--font-size-sm);
+}
+
+.artist-about-stats strong {
+    color: var(--text-primary);
+}
+
+/* ===== SONG DETAIL PAGE ===== */
+.song-detail-tabs {
+    display: flex;
+    gap: var(--space-xl);
+    margin-bottom: var(--space-xl);
+    border-bottom: 1px solid var(--border-subtle);
+}
+
+.song-detail-tab {
+    padding: var(--space-md) 0;
+    font-size: var(--font-size-sm);
+    color: var(--text-secondary);
+    cursor: pointer;
+    border-bottom: 2px solid transparent;
+    transition: color var(--transition-fast);
+}
+
+.song-detail-tab:hover {
+    color: var(--text-primary);
+}
+
+.song-detail-tab.active {
+    color: var(--text-primary);
+    border-bottom-color: var(--accent);
+}
+
+/* ===== DISCOVER PAGE ===== */
+.page-discover {
+    background: linear-gradient(180deg, rgba(30, 50, 100, 0.4) 0%, var(--bg-primary) 400px);
+}
