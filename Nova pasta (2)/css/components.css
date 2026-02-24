@@ -5,13 +5,20 @@
     padding: var(--space-sm);
     border-radius: var(--radius-md);
     background: var(--bg-card);
-    transition: background var(--transition-normal);
+    transition: background var(--transition-normal), transform var(--transition-normal) var(--easing-smooth), box-shadow var(--transition-normal);
     cursor: pointer;
     position: relative;
+    will-change: transform;
 }
 
 .card:hover {
     background: var(--bg-elevated);
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-elevated);
+}
+
+.card:active {
+    transform: scale(0.98);
 }
 
 .card-cover {
@@ -46,14 +53,25 @@
     align-items: center;
     justify-content: center;
     opacity: 0;
-    transform: translateY(8px);
-    transition: opacity var(--transition-normal), transform var(--transition-normal);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+    transform: translateY(8px) scale(0.9);
+    transition: opacity var(--transition-fast), transform var(--transition-normal) var(--easing-bouncy), background var(--transition-fast);
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.4);
+    will-change: transform, opacity;
 }
 
 .card:hover .card-play-btn {
     opacity: 1;
-    transform: translateY(0);
+    transform: translateY(0) scale(1);
+}
+
+.card-play-btn:hover {
+    background: var(--accent-hover);
+    transform: scale(1.05) !important;
+}
+
+.card-play-btn:active {
+    background: var(--accent-dark);
+    transform: scale(0.96) !important;
 }
 
 .card-play-btn svg {
@@ -154,9 +172,21 @@
     margin-bottom: var(--space-md);
 }
 
+.btn-clear-searches {
+    color: var(--text-muted);
+    padding: 4px;
+    transition: color 0.2s;
+    cursor: pointer;
+}
+
+.btn-clear-searches:hover {
+    color: var(--text-primary);
+}
+
 .section-header h2 {
     font-size: var(--font-size-xl);
     font-weight: var(--font-weight-bold);
+    letter-spacing: -0.04em;
 }
 
 .section-header-right {
@@ -171,11 +201,16 @@
     font-weight: var(--font-weight-semibold);
     cursor: pointer;
     text-transform: uppercase;
-    letter-spacing: 0.5px;
+    letter-spacing: 0.1em;
+    transition: color var(--transition-fast), transform var(--transition-fast) var(--easing-smooth);
 }
 
 .section-see-all:hover {
     color: var(--text-primary);
+}
+
+.section-see-all:active {
+    transform: scale(0.96);
 }
 
 .section-nav-btn {
@@ -1014,11 +1049,17 @@
     min-width: 200px;
     box-shadow: var(--shadow-elevated);
     z-index: var(--z-dropdown);
-    display: none;
+    opacity: 0;
+    visibility: hidden;
+    transform: scale(0.95);
+    transform-origin: top left;
+    transition: opacity var(--transition-fast), transform var(--transition-normal) var(--easing-bouncy), visibility var(--transition-fast);
 }
 
 .context-menu.show {
-    display: block;
+    opacity: 1;
+    visibility: visible;
+    transform: scale(1);
 }
 
 .context-menu-item {

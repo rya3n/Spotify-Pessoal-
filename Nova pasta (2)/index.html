@@ -79,62 +79,65 @@
       </div>
     </nav>
 
-    <!-- ===== TOP BAR ===== -->
-    <header class="topbar">
-      <div class="topbar-nav">
-        <div class="topbar-nav-item active" data-page="home">
-          <svg viewBox="0 0 24 24" fill="currentColor" style="width:18px;height:18px">
-            <path d="M12.5 3.248a1 1 0 00-1 0L4 7.577V20h4.5v-6a1 1 0 011-1h5a1 1 0 011 1v6H20V7.577l-7.5-4.33z" />
-          </svg>
-          <span>Início</span>
+    <!-- ===== MAIN PANEL ===== -->
+    <div class="main-view-panel">
+      <!-- ===== TOP BAR ===== -->
+      <header class="topbar">
+        <div class="topbar-nav">
+          <div class="topbar-nav-item active" data-page="home">
+            <svg viewBox="0 0 24 24" fill="currentColor" style="width:18px;height:18px">
+              <path d="M12.5 3.248a1 1 0 00-1 0L4 7.577V20h4.5v-6a1 1 0 011-1h5a1 1 0 011 1v6H20V7.577l-7.5-4.33z" />
+            </svg>
+            <span>Início</span>
+          </div>
+          <div class="topbar-nav-item" data-page="discover">
+            <svg viewBox="0 0 24 24" fill="currentColor" style="width:18px;height:18px">
+              <path
+                d="M12 2C6.477 2 2 6.477 2 12s4.477 10 10 10 10-4.477 10-10S17.523 2 12 2zm0 18c-4.411 0-8-3.589-8-8s3.589-8 8-8 8 3.589 8 8-3.589 8-8 8zm-3.5-4.5l2-5 5-2-2 5-5 2z" />
+            </svg>
+            <span>Descobrir</span>
+          </div>
+          <div class="topbar-nav-item" data-page="search">
+            <svg viewBox="0 0 24 24" fill="currentColor" style="width:18px;height:18px">
+              <path
+                d="M10.533 1.279c-5.18 0-9.407 4.14-9.407 9.279s4.226 9.279 9.407 9.279c2.234 0 4.29-.77 5.907-2.058l4.353 4.353a1 1 0 101.414-1.414l-4.344-4.344a9.157 9.157 0 002.077-5.816c0-5.14-4.226-9.28-9.407-9.28z" />
+            </svg>
+            <span>Buscar</span>
+          </div>
         </div>
-        <div class="topbar-nav-item" data-page="discover">
-          <svg viewBox="0 0 24 24" fill="currentColor" style="width:18px;height:18px">
-            <path
-              d="M12 2C6.477 2 2 6.477 2 12s4.477 10 10 10 10-4.477 10-10S17.523 2 12 2zm0 18c-4.411 0-8-3.589-8-8s3.589-8 8-8 8 3.589 8 8-3.589 8-8 8zm-3.5-4.5l2-5 5-2-2 5-5 2z" />
-          </svg>
-          <span>Descobrir</span>
-        </div>
-        <div class="topbar-nav-item" data-page="search">
-          <svg viewBox="0 0 24 24" fill="currentColor" style="width:18px;height:18px">
-            <path
-              d="M10.533 1.279c-5.18 0-9.407 4.14-9.407 9.279s4.226 9.279 9.407 9.279c2.234 0 4.29-.77 5.907-2.058l4.353 4.353a1 1 0 101.414-1.414l-4.344-4.344a9.157 9.157 0 002.077-5.816c0-5.14-4.226-9.28-9.407-9.28z" />
-          </svg>
-          <span>Buscar</span>
-        </div>
-      </div>
 
-      <div class="topbar-actions">
-        <button class="topbar-action-btn">
-          <svg viewBox="0 0 24 24" fill="currentColor" style="width:20px;height:20px">
-            <path
-              d="M12 22c1.1 0 2-.9 2-2h-4c0 1.1.9 2 2 2zm6-6v-5c0-3.07-1.63-5.64-4.5-6.32V4c0-.83-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5v.68C7.64 5.36 6 7.92 6 11v5l-2 2v1h16v-1l-2-2z" />
-          </svg>
-        </button>
-        <button class="topbar-action-btn friends-toggle">
-          <svg viewBox="0 0 24 24" fill="currentColor" style="width:20px;height:20px">
-            <path
-              d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z" />
-          </svg>
-        </button>
-        <button class="topbar-action-btn" data-page="settings" title="Settings">
-          <svg viewBox="0 0 24 24" fill="currentColor" style="width:20px;height:20px">
-            <path
-              d="M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58a.49.49 0 00.12-.61l-1.92-3.32a.488.488 0 00-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54a.484.484 0 00-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.07.62-.07.94s.02.64.07.94l-2.03 1.58a.49.49 0 00-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.48-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z" />
-          </svg>
-        </button>
-        <div class="topbar-avatar" id="topbar-avatar" style="cursor:pointer" title="Perfil">
-          <div
-            style="width:100%;height:100%;background:linear-gradient(135deg, #e61e32, #1e3264);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:600">
-            U</div>
+        <div class="topbar-actions">
+          <button class="topbar-action-btn">
+            <svg viewBox="0 0 24 24" fill="currentColor" style="width:20px;height:20px">
+              <path
+                d="M12 22c1.1 0 2-.9 2-2h-4c0 1.1.9 2 2 2zm6-6v-5c0-3.07-1.63-5.64-4.5-6.32V4c0-.83-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5v.68C7.64 5.36 6 7.92 6 11v5l-2 2v1h16v-1l-2-2z" />
+            </svg>
+          </button>
+          <button class="topbar-action-btn friends-toggle">
+            <svg viewBox="0 0 24 24" fill="currentColor" style="width:20px;height:20px">
+              <path
+                d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z" />
+            </svg>
+          </button>
+          <button class="topbar-action-btn" data-page="settings" title="Settings">
+            <svg viewBox="0 0 24 24" fill="currentColor" style="width:20px;height:20px">
+              <path
+                d="M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58a.49.49 0 00.12-.61l-1.92-3.32a.488.488 0 00-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54a.484.484 0 00-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.07.62-.07.94s.02.64.07.94l-2.03 1.58a.49.49 0 00-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.48-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z" />
+            </svg>
+          </button>
+          <div class="topbar-avatar" id="topbar-avatar" style="cursor:pointer" title="Perfil">
+            <div
+              style="width:100%;height:100%;background:linear-gradient(135deg, #e61e32, #1e3264);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:600">
+              U</div>
+          </div>
         </div>
-      </div>
-    </header>
+      </header>
 
-    <!-- ===== MAIN CONTENT ===== -->
-    <main class="main-content" id="main-content">
-      <!-- Dynamic content rendered by app.js -->
-    </main>
+      <!-- ===== MAIN CONTENT ===== -->
+      <main class="main-content" id="main-content">
+        <!-- Dynamic content rendered by app.js -->
+      </main>
+    </div> <!-- /main-view-panel -->
 
     <!-- ===== FRIENDS PANEL ===== -->
     <aside class="friends-panel">

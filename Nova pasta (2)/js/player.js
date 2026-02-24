@@ -16,7 +16,28 @@ const playerState = {
 // Global audio element
 let audioElement = null;
 
+// ===== PLAY COUNT TRACKING =====
+let playCounts = {}; // { artistId: count }
+
+function loadPlayCounts() {
+    playCounts = JSON.parse(localStorage.getItem('playCounts') || '{}');
+}
+
+function savePlayCounts() {
+    localStorage.setItem('playCounts', JSON.stringify(playCounts));
+}
+
+function trackPlay(song) {
+    const artistId = song.artistId || song.artist;
+    if (!artistId) return;
+    playCounts[artistId] = (playCounts[artistId] || 0) + 1;
+    savePlayCounts();
+}
+
 function initPlayer() {
+    // Load play counts from localStorage
+    loadPlayCounts();
+
     // Create or get audio element
     audioElement = document.getElementById('audio-player');
     if (!audioElement) {
@@ -131,6 +152,9 @@ async function playSong(song) {
     playerState.isPlaying = true;
     playerState.currentTime = 0;
     playerState.hasRealAudio = false;
+
+    // Track play count for artist
+    trackPlay(song);
 
     // Try to enrich song with API data if not already done
     if (!song.enriched && typeof enrichSongWithAPI === 'function') {

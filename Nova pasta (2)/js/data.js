@@ -52,7 +52,17 @@ const DATA = {
 
   // Artistas — fixos, definidos pelo usuário
   // O usuário vai mandando os artistas para adicionar aqui
-  artists: [],
+  artists: [
+    {
+      id: 'matue',
+      name: 'Matuê',
+      image: '',
+      gradient: 'linear-gradient(135deg, #e61e32, #1a1a3e)',
+      genres: ['Rap', 'Trap', 'Hip Hop'],
+      monthlyListeners: '25.4M',
+      bio: 'Rapper brasileiro de Fortaleza, Ceará. Um dos maiores nomes do rap nacional.',
+    },
+  ],
 
   // Álbuns — criados quando o usuário adiciona músicas
   albums: [],

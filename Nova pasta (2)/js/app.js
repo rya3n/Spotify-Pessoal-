@@ -97,12 +97,18 @@ function renderHomePage(container) {
   }));
   container.appendChild(createSection('Suas mixes favoritas', topMixes, { seeAll: true }));
 
-  // Favorite Artists
-  const favArtists = DATA.artists.slice(0, 6).map(a => ({
-    ...a, type: 'artist', subtitle: 'Artista',
-    onClick: () => navigateTo('artist', a.id)
-  }));
-  container.appendChild(createSection('Seus artistas favoritos', favArtists, { seeAll: true }));
+  // Favorite Artists — only followed + listened to
+  const favArtists = DATA.artists
+    .filter(a => isFollowing(a.id) && (playCounts[a.id] || 0) > 0)
+    .sort((a, b) => (playCounts[b.id] || 0) - (playCounts[a.id] || 0))
+    .slice(0, 6)
+    .map(a => ({
+      ...a, type: 'artist', subtitle: `${playCounts[a.id]} reproduções`,
+      onClick: () => navigateTo('artist', a.id)
+    }));
+  if (favArtists.length > 0) {
+    container.appendChild(createSection('Seus artistas favoritos', favArtists, { seeAll: true }));
+  }
 }
 
 // ===== SEARCH PAGE =====
@@ -118,30 +124,68 @@ function renderSearchPage(container) {
   `;
   container.appendChild(searchWrap);
 
-  // Recent Searches
+  // Recent Searches (from localStorage)
   const recentSection = document.createElement('div');
   recentSection.className = 'section recent-searches-section';
-  recentSection.innerHTML = `<div class="section-header"><h2>Buscas recentes</h2></div>`;
-  const recentRow = document.createElement('div');
-  recentRow.className = 'recent-searches-row';
-  DATA.artists.slice(0, 5).forEach(a => {
-    const item = document.createElement('div');
-    item.className = 'recent-search';
-    item.innerHTML = `
-      <div class="recent-search-avatar">
-        ${a.imageUrl
-        ? `<img src="${a.imageUrl}" alt="${a.name}" style="width:100%;height:100%;object-fit:cover;border-radius:50%">`
-        : `<div style="width:100%;height:100%;background:${getGradient(a.gradient)};border-radius:50%"></div>`
-      }
-        <button class="recent-search-close">${ICONS.close}</button>
+
+  function renderRecentSearches() {
+    const recentSearches = getRecentSearches();
+    recentSection.innerHTML = '';
+    if (recentSearches.length === 0) return;
+
+    recentSection.innerHTML = `
+      <div class="section-header">
+        <h2>Buscas recentes</h2>
+        <button class="btn-clear-searches" title="Limpar buscas recentes">
+          <svg viewBox="0 0 24 24" fill="currentColor" style="width:18px;height:18px"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
       </div>
-      <span class="recent-search-name">${a.name}</span>
-      <span class="recent-search-type">Artista</span>
     `;
-    item.addEventListener('click', () => navigateTo('artist', a.id));
-    recentRow.appendChild(item);
-  });
-  recentSection.appendChild(recentRow);
+
+    const recentRow = document.createElement('div');
+    recentRow.className = 'recent-searches-row';
+
+    recentSearches.forEach(item => {
+      const el = document.createElement('div');
+      el.className = 'recent-search';
+      el.innerHTML = `
+        <div class="recent-search-avatar">
+          <div style="width:100%;height:100%;background:${item.gradient || getGradient(0)};border-radius:50%;display:flex;align-items:center;justify-content:center;color:rgba(255,255,255,0.4)">
+            <svg viewBox="0 0 24 24" fill="currentColor" style="width:24px;height:24px"><path d="${item.type === 'artist' ? 'M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z' : 'M12 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z'}"/></svg>
+          </div>
+          <button class="recent-search-close" data-id="${item.id}">${ICONS.close}</button>
+        </div>
+        <span class="recent-search-name">${item.name}</span>
+        <span class="recent-search-type">${item.type === 'artist' ? 'Artista' : item.type === 'album' ? 'Álbum' : 'Música'}</span>
+      `;
+      el.addEventListener('click', (e) => {
+        if (e.target.closest('.recent-search-close')) return;
+        if (item.type === 'artist') navigateTo('artist', item.id);
+        else if (item.type === 'album') navigateTo('album', item.id);
+        else navigateTo('song', item.id);
+      });
+      recentRow.appendChild(el);
+    });
+
+    recentSection.appendChild(recentRow);
+
+    // Clear all button
+    recentSection.querySelector('.btn-clear-searches')?.addEventListener('click', () => {
+      clearRecentSearches();
+      renderRecentSearches();
+    });
+
+    // Individual X buttons
+    recentSection.querySelectorAll('.recent-search-close').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        removeRecentSearch(btn.dataset.id);
+        renderRecentSearches();
+      });
+    });
+  }
+
+  renderRecentSearches();
   container.appendChild(recentSection);
 
   // Browse All / Discover
@@ -190,9 +234,14 @@ function renderSearchPage(container) {
     // Remove previous results
     container.querySelectorAll('.search-results, .api-search-results, .search-artists-results, .search-albums-results').forEach(el => el.remove());
 
+    // Normalize for accent-insensitive search
+    function normalize(str) {
+      return str.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
+    }
+
     // ── ARTIST MATCHES ──
     const matchedArtists = DATA.artists.filter(a =>
-      a.name.toLowerCase().includes(query)
+      normalize(a.name).includes(normalize(query))
     );
 
     if (matchedArtists.length > 0) {
@@ -216,9 +265,12 @@ function renderSearchPage(container) {
           }
                   </div>
                   <div class="card-title">${a.name}</div>
-                  <div class="card-subtitle">${a.verified ? '✓ ' : ''}Artist · ${a.followers} followers</div>
+                  <div class="card-subtitle">Artista${a.monthlyListeners ? ' · ' + a.monthlyListeners + ' ouvintes' : ''}</div>
                 `;
-        card.addEventListener('click', () => navigateTo('artist', a.id));
+        card.addEventListener('click', () => {
+          addRecentSearch({ id: a.id, name: a.name, type: 'artist', gradient: getGradient(a.gradient) });
+          navigateTo('artist', a.id);
+        });
         artistRow.appendChild(card);
       });
       artistsDiv.appendChild(artistRow);
@@ -227,8 +279,8 @@ function renderSearchPage(container) {
 
     // ── ALBUM MATCHES ──
     const matchedAlbums = DATA.albums.filter(a =>
-      a.name.toLowerCase().includes(query) ||
-      a.artist.toLowerCase().includes(query)
+      normalize(a.name).includes(normalize(query)) ||
+      normalize(a.artist).includes(normalize(query))
     );
 
     if (matchedAlbums.length > 0) {
@@ -241,7 +293,10 @@ function renderSearchPage(container) {
       matchedAlbums.slice(0, 6).forEach(a => {
         albumRow.appendChild(createCard({
           ...a, subtitle: `${a.year} · ${a.artist}`,
-          onClick: () => navigateTo('album', a.id)
+          onClick: () => {
+            addRecentSearch({ id: a.id, name: a.name, type: 'album', gradient: getGradient(a.gradient) });
+            navigateTo('album', a.id);
+          }
         }));
       });
       albumsDiv.appendChild(albumRow);
@@ -252,8 +307,8 @@ function renderSearchPage(container) {
 
     // ── SONG MATCHES ──
     const localResults = DATA.songs.filter(s =>
-      s.title.toLowerCase().includes(query) ||
-      s.artist.toLowerCase().includes(query)
+      normalize(s.title).includes(normalize(query)) ||
+      normalize(s.artist).includes(normalize(query))
     );
 
     if (localResults.length > 0) {
@@ -273,6 +328,29 @@ function renderSearchPage(container) {
   input.addEventListener('input', (e) => {
     performSearch(e.target.value.toLowerCase().trim());
   });
+}
+
+// ===== RECENT SEARCHES PERSISTENCE =====
+function getRecentSearches() {
+  return JSON.parse(localStorage.getItem('recentSearches') || '[]');
+}
+
+function addRecentSearch(item) {
+  let searches = getRecentSearches();
+  searches = searches.filter(s => s.id !== item.id);
+  searches.unshift(item);
+  if (searches.length > 10) searches = searches.slice(0, 10);
+  localStorage.setItem('recentSearches', JSON.stringify(searches));
+}
+
+function removeRecentSearch(id) {
+  let searches = getRecentSearches();
+  searches = searches.filter(s => s.id !== id);
+  localStorage.setItem('recentSearches', JSON.stringify(searches));
+}
+
+function clearRecentSearches() {
+  localStorage.removeItem('recentSearches');
 }
 
 // ===== LIBRARY PAGE =====
@@ -661,10 +739,11 @@ function renderArtistPage(container, artistId) {
   // Actions
   const actionsDiv = document.createElement('div');
   actionsDiv.className = 'artist-actions';
+  const alreadyFollowing = isFollowing(artist.id);
   actionsDiv.innerHTML = `
     <button class="btn-play-large">${ICONS.play}</button>
     <button class="btn-shuffle btn-icon">${ICONS.shuffle}</button>
-    <button class="btn-follow">Seguir</button>
+    <button class="btn-follow ${alreadyFollowing ? 'following' : ''}">${alreadyFollowing ? 'Seguindo' : 'Seguir'}</button>
     <button class="btn-icon">${ICONS.more}</button>
   `;
   container.appendChild(actionsDiv);
@@ -707,10 +786,10 @@ function renderArtistPage(container, artistId) {
   // Follow button
   const followBtn = actionsDiv.querySelector('.btn-follow');
   followBtn.addEventListener('click', () => {
-    const isFollowing = followBtn.textContent === 'Seguindo';
-    followBtn.textContent = isFollowing ? 'Seguir' : 'Seguindo';
-    followBtn.style.borderColor = isFollowing ? '' : 'var(--accent)';
-    followBtn.style.color = isFollowing ? '' : 'var(--accent)';
+    toggleFollowArtist(artist.id);
+    const nowFollowing = isFollowing(artist.id);
+    followBtn.textContent = nowFollowing ? 'Seguindo' : 'Seguir';
+    followBtn.classList.toggle('following', nowFollowing);
   });
 }
 
@@ -1123,12 +1202,19 @@ function renderProfilePage(container) {
     container.appendChild(createSection('Playlists públicas', userPlaylists, { seeAll: true }));
   }
 
-  // Top artists
-  const topArtists = DATA.artists.slice(0, 6).map(a => ({
-    ...a, type: 'artist', subtitle: 'Artista',
-    onClick: () => navigateTo('artist', a.id)
-  }));
-  container.appendChild(createSection('Artistas mais ouvidos', topArtists, { seeAll: true }));
+  // Top artists — sorted by actual play count
+  const topArtists = DATA.artists
+    .filter(a => (playCounts[a.id] || 0) > 0)
+    .sort((a, b) => (playCounts[b.id] || 0) - (playCounts[a.id] || 0))
+    .slice(0, 6)
+    .map(a => ({
+      ...a, type: 'artist',
+      subtitle: `${playCounts[a.id]} reproduções`,
+      onClick: () => navigateTo('artist', a.id)
+    }));
+  if (topArtists.length > 0) {
+    container.appendChild(createSection('Artistas mais ouvidos', topArtists, { seeAll: true }));
+  }
 
   // Recently played (simulated with albums)
   const recentlyPlayed = DATA.albums.slice(0, 6).map(a => ({
@@ -1300,6 +1386,24 @@ function refreshSidebarPlaylists() {
     sidebarLib.appendChild(item);
   });
 
+  // Artists (only followed)
+  const followed = DATA.artists.filter(a => isFollowing(a.id));
+  if (followed.length > 0) {
+    sidebarLib.appendChild(createSidebarDivider());
+    sidebarLib.appendChild(createSidebarHeader('Artistas'));
+    followed.forEach(a => {
+      const item = document.createElement('div');
+      item.className = 'sidebar-lib-item';
+      item.dataset.page = 'artist';
+      item.dataset.id = a.id;
+      item.innerHTML = `
+            <span class="lib-icon"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg></span>
+            <span>${a.name}</span>`;
+      item.addEventListener('click', () => navigateTo('artist', a.id));
+      sidebarLib.appendChild(item);
+    });
+  }
+
   // Albums (if any)
   if (DATA.albums.length > 0) {
     sidebarLib.appendChild(createSidebarDivider());
@@ -1313,23 +1417,6 @@ function refreshSidebarPlaylists() {
             <span class="lib-icon"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 14.5c-2.49 0-4.5-2.01-4.5-4.5S9.51 7.5 12 7.5s4.5 2.01 4.5 4.5-2.01 4.5-4.5 4.5zm0-5.5c-.55 0-1 .45-1 1s.45 1 1 1 1-.45 1-1-.45-1-1-1z"/></svg></span>
             <span>${a.name}</span>`;
       item.addEventListener('click', () => navigateTo('album', a.id));
-      sidebarLib.appendChild(item);
-    });
-  }
-
-  // Artists (if any)
-  if (DATA.artists.length > 0) {
-    sidebarLib.appendChild(createSidebarDivider());
-    sidebarLib.appendChild(createSidebarHeader('Artistas'));
-    DATA.artists.forEach(a => {
-      const item = document.createElement('div');
-      item.className = 'sidebar-lib-item';
-      item.dataset.page = 'artist';
-      item.dataset.id = a.id;
-      item.innerHTML = `
-            <span class="lib-icon"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg></span>
-            <span>${a.name}</span>`;
-      item.addEventListener('click', () => navigateTo('artist', a.id));
       sidebarLib.appendChild(item);
     });
   }
@@ -1348,6 +1435,8 @@ function refreshSidebarPlaylists() {
     });
   }
 }
+
+
 
 // ===== ADD MUSIC MODAL =====
 let addMusicTargetPlaylist = null;
@@ -1524,6 +1613,32 @@ function loadSongs() {
   savedAlbums.forEach(a => {
     if (!DATA.albums.find(x => x.id === a.id)) DATA.albums.push(a);
   });
+}
+
+// ===== FOLLOW ARTIST SYSTEM =====
+let followedArtists = new Set();
+
+function loadFollowedArtists() {
+  const saved = JSON.parse(localStorage.getItem('followedArtists') || '[]');
+  followedArtists = new Set(saved);
+}
+
+function saveFollowedArtists() {
+  localStorage.setItem('followedArtists', JSON.stringify([...followedArtists]));
+}
+
+function toggleFollowArtist(artistId) {
+  if (followedArtists.has(artistId)) {
+    followedArtists.delete(artistId);
+  } else {
+    followedArtists.add(artistId);
+  }
+  saveFollowedArtists();
+  refreshSidebarPlaylists();
+}
+
+function isFollowing(artistId) {
+  return followedArtists.has(artistId);
 }
 
 function createSidebarDivider() {
@@ -1846,13 +1961,11 @@ function renderSettingsPage(container) {
   });
   container.querySelector('#setting-fontsize').addEventListener('change', (e) => {
     settings.fontSize = e.target.value; saveSettings();
-    const scale = { small: '13px', medium: '14px', large: '16px' };
-    document.documentElement.style.setProperty('--font-size-base', scale[e.target.value]);
+    document.documentElement.dataset.fontSize = e.target.value;
   });
   container.querySelector('#setting-density').addEventListener('change', (e) => {
     settings.layoutDensity = e.target.value; saveSettings();
-    const spacing = { compact: '12px', normal: '16px', comfortable: '22px' };
-    document.documentElement.style.setProperty('--space-md', spacing[e.target.value]);
+    document.documentElement.dataset.layoutDensity = e.target.value;
   });
   container.querySelector('#setting-lyrics').addEventListener('change', (e) => { settings.showLyrics = e.target.checked; saveSettings(); });
   container.querySelector('#setting-animations').addEventListener('change', (e) => {
@@ -1881,8 +1994,8 @@ function renderSettingsPage(container) {
     if (confirm('Resetar todas as configurações?')) {
       localStorage.removeItem('appSettings');
       document.documentElement.style.setProperty('--accent', '#1db954');
-      document.documentElement.style.removeProperty('--font-size-base');
-      document.documentElement.style.removeProperty('--space-md');
+      delete document.documentElement.dataset.fontSize;
+      delete document.documentElement.dataset.layoutDensity;
       navigateTo('settings');
     }
   });
@@ -1898,12 +2011,10 @@ function applySavedSettings() {
   const saved = JSON.parse(localStorage.getItem('appSettings') || '{}');
   if (saved.accentColor) document.documentElement.style.setProperty('--accent', saved.accentColor);
   if (saved.fontSize) {
-    const scale = { small: '13px', medium: '14px', large: '16px' };
-    if (scale[saved.fontSize]) document.documentElement.style.setProperty('--font-size-base', scale[saved.fontSize]);
+    document.documentElement.dataset.fontSize = saved.fontSize;
   }
   if (saved.layoutDensity) {
-    const spacing = { compact: '12px', normal: '16px', comfortable: '22px' };
-    if (spacing[saved.layoutDensity]) document.documentElement.style.setProperty('--space-md', spacing[saved.layoutDensity]);
+    document.documentElement.dataset.layoutDensity = saved.layoutDensity;
   }
   if (saved.animations === false) document.body.classList.add('no-animations');
   if (saved.userName) {
@@ -2026,6 +2137,7 @@ function initApp() {
   // Initialize
   loadUserPlaylists();
   loadSongs();
+  loadFollowedArtists();
   applySavedSettings();
   refreshSidebarPlaylists();
   renderPage();

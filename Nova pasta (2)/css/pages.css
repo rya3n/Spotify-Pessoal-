@@ -107,6 +107,11 @@
     transform: scale(1.02);
 }
 
+.btn-follow.following {
+    border-color: var(--accent);
+    color: var(--accent);
+}
+
 .artist-popular-tracks {
     margin-bottom: var(--space-xxl);
 }

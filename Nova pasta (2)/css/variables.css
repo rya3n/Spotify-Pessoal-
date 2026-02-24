@@ -62,14 +62,6 @@
   --space-xl: 24px;
   --space-xxl: 32px;
   --space-3xl: 48px;
-
-  /* Layout Dimensions */
-  --sidebar-width: 220px;
-  --sidebar-collapsed: 72px;
-  --topbar-height: 56px;
-  --player-height: 80px;
-  --friends-width: 280px;
-
   /* Border Radius */
   --radius-xs: 4px;
   --radius-sm: 6px;
@@ -79,9 +71,11 @@
   --radius-circle: 50%;
 
   /* Transitions */
-  --transition-fast: 150ms ease;
-  --transition-normal: 200ms ease;
-  --transition-slow: 300ms ease;
+  --easing-smooth: cubic-bezier(0.4, 0, 0.2, 1);
+  --easing-bouncy: cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  --transition-fast: 150ms var(--easing-smooth);
+  --transition-normal: 250ms var(--easing-smooth);
+  --transition-slow: 400ms var(--easing-smooth);
 
   /* Shadows */
   --shadow-card: 0 4px 12px rgba(0, 0, 0, 0.4);
@@ -101,4 +95,48 @@
   --z-modal: 400;
   --z-dropdown: 500;
   --z-tooltip: 600;
+}
+
+/* Typography Overrides */
+html[data-font-size="small"] {
+  --font-size-xxl: 28px;
+  --font-size-xl: 20px;
+  --font-size-lg: 18px;
+  --font-size-md: 14px;
+  --font-size-sm: 12px;
+  --font-size-xs: 11px;
+  --font-size-xxs: 9px;
+}
+
+html[data-font-size="large"] {
+  --font-size-xxl: 36px;
+  --font-size-xl: 28px;
+  --font-size-lg: 22px;
+  --font-size-md: 18px;
+  --font-size-sm: 16px;
+  --font-size-xs: 14px;
+  --font-size-xxs: 12px;
+}
+
+/* Spacing Overrides */
+html[data-layout-density="compact"] {
+  --space-xxs: 2px;
+  --space-xs: 4px;
+  --space-sm: 8px;
+  --space-md: 12px;
+  --space-lg: 16px;
+  --space-xl: 20px;
+  --space-xxl: 28px;
+  --space-3xl: 40px;
+}
+
+html[data-layout-density="comfortable"] {
+  --space-xxs: 6px;
+  --space-xs: 12px;
+  --space-sm: 16px;
+  --space-md: 22px;
+  --space-lg: 28px;
+  --space-xl: 36px;
+  --space-xxl: 48px;
+  --space-3xl: 64px;
 }
